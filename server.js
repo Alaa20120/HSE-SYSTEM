@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const os = require('os');
-const LocalDB = require('./localdb');
+const LocalDB = require('./supabasedb');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -985,16 +985,23 @@ function getLocalIpAddresses() {
   return addresses;
 }
 
-// Start the server
-app.listen(PORT, '0.0.0.0', async () => {
-  await seedUsers();
-  const localIps = getLocalIpAddresses();
-  console.log(`=======================================================`);
-  console.log(` HSE SAFETY SYSTEM SERVER ACTIVE                       `);
-  console.log(` Running locally on: http://localhost:${PORT}        `);
-  localIps.forEach(ip => {
-    console.log(` Running on network: http://${ip}:${PORT}           `);
+// Start the server only if run directly
+if (require.main === module) {
+  app.listen(PORT, '0.0.0.0', async () => {
+    await seedUsers();
+    const localIps = getLocalIpAddresses();
+    console.log(`=======================================================`);
+    console.log(` HSE SAFETY SYSTEM SERVER ACTIVE                       `);
+    console.log(` Running locally on: http://localhost:${PORT}        `);
+    localIps.forEach(ip => {
+      console.log(` Running on network: http://${ip}:${PORT}           `);
+    });
+    console.log(` Press Ctrl+C to terminate the server                  `);
+    console.log(`=======================================================`);
   });
-  console.log(` Press Ctrl+C to terminate the server                  `);
-  console.log(`=======================================================`);
-});
+} else {
+  // Run user seeding asynchronously when loaded as a module (Vercel serverless startup)
+  seedUsers().catch(err => console.error("Failed to seed users on startup:", err));
+}
+
+module.exports = app;

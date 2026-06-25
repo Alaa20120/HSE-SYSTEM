@@ -1,6 +1,7 @@
 # Dependency directories
 node_modules/
 jspm_packages/
+.env
 
 # Local databases and active logs
 database/activity_logs.json
