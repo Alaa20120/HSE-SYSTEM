@@ -38,7 +38,7 @@ if not exist "node_modules" (
 echo.
 echo [INFO] Booting Express Local HSE Server...
 :: Start the server in a separate background cmd shell
-start "HSE Safety Server" cmd /k "node server.js"
+start "HSE Safety Server" cmd /k "node api/index.js"
 
 echo.
 echo [INFO] Waiting 3 seconds for server startup...

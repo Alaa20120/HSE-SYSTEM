@@ -5,7 +5,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-// Derive default URL from publishable key if SUPABASE_URL isn't explicitly set
+// Derive default URL from project reference
 const DEFAULT_PROJECT_REF = 'hlswqnddptjnggtdicix';
 const DEFAULT_SUPABASE_URL = `https://${DEFAULT_PROJECT_REF}.supabase.co`;
 
@@ -46,7 +46,6 @@ const SupabaseDB = {
       
       // Apply exact matches for query properties dynamically
       for (const key in query) {
-        // Query keys in javascript are mapped directly to matching table columns
         builder = builder.eq(key, query[key]);
       }
       
@@ -91,15 +90,11 @@ const SupabaseDB = {
   async insert(collectionName, doc) {
     try {
       const timestamp = new Date().toISOString();
-      
-      // Remove id from insertion row if present, let PostgreSQL generate the serial id
       const { id, ...insertRow } = doc;
       
-      // If collection expects timing, inject it
       if (insertRow.createdAt === undefined) insertRow.createdAt = timestamp;
       if (insertRow.updatedAt === undefined) insertRow.updatedAt = timestamp;
 
-      // Handle user email casing
       if (collectionName === 'users' && insertRow.email) {
         insertRow.email = String(insertRow.email).toLowerCase().trim();
       }
@@ -126,7 +121,6 @@ const SupabaseDB = {
    */
   async update(collectionName, id, updates) {
     try {
-      // Remove id from the updates body
       const { id: _, ...updateRow } = updates;
       updateRow.updatedAt = new Date().toISOString();
 
