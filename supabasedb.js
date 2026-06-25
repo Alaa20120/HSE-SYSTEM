@@ -6,7 +6,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Derive default URL from publishable key if SUPABASE_URL isn't explicitly set
-const DEFAULT_PROJECT_REF = 'SNz3ZbvVsnJxdcjWg17M4A';
+const DEFAULT_PROJECT_REF = 'hlswqnddptjnggtdicix';
 const DEFAULT_SUPABASE_URL = `https://${DEFAULT_PROJECT_REF}.supabase.co`;
 
 const supabaseUrl = process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
