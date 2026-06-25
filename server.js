@@ -1,4 +1,5 @@
 // Root entrypoint wrapper for Vercel and local runs
+const express = require('express');
 const app = require('./api/index.js');
 
 if (require.main === module) {
