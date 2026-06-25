@@ -6,16 +6,11 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Derive default URL from publishable key if SUPABASE_URL isn't explicitly set
-// Key: sb_publishable_SNz3ZbvVsnJxdcjWg17M4A_W9XAN6O7 -> Project Ref: SNz3ZbvVsnJxdcjWg17M4A
 const DEFAULT_PROJECT_REF = 'SNz3ZbvVsnJxdcjWg17M4A';
 const DEFAULT_SUPABASE_URL = `https://${DEFAULT_PROJECT_REF}.supabase.co`;
 
 const supabaseUrl = process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_SNz3ZbvVsnJxdcjWg17M4A_W9XAN6O7';
-
-if (!supabaseUrl) {
-  console.error('[SUPABASE] Warning: SUPABASE_URL is not set.');
-}
 
 console.log(`[SUPABASE] Initializing connection to: ${supabaseUrl}`);
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -35,12 +30,7 @@ const SupabaseDB = {
         throw error;
       }
       
-      return (data || []).map(r => {
-        if (collectionName === 'users') {
-          return { id: r.id, email: r.email, ...r.data };
-        }
-        return { id: r.id, ...r.data };
-      });
+      return data || [];
     } catch (error) {
       console.error(`[SUPABASE ERROR] getAll failed for collection "${collectionName}":`, error);
       throw error;
@@ -52,15 +42,21 @@ const SupabaseDB = {
    */
   async find(collectionName, query = {}) {
     try {
-      const items = await this.getAll(collectionName);
-      return items.filter(item => {
-        for (const key in query) {
-          if (String(item[key]).toLowerCase() !== String(query[key]).toLowerCase()) {
-            return false;
-          }
-        }
-        return true;
-      });
+      let builder = supabase.from(collectionName).select('*');
+      
+      // Apply exact matches for query properties dynamically
+      for (const key in query) {
+        // Query keys in javascript are mapped directly to matching table columns
+        builder = builder.eq(key, query[key]);
+      }
+      
+      const { data, error } = await builder.order('id', { ascending: true });
+      
+      if (error) {
+        throw error;
+      }
+      
+      return data || [];
     } catch (error) {
       console.error(`[SUPABASE ERROR] find failed for collection "${collectionName}":`, error);
       throw error;
@@ -82,12 +78,7 @@ const SupabaseDB = {
         throw error;
       }
 
-      if (!data) return null;
-
-      if (collectionName === 'users') {
-        return { id: data.id, email: data.email, ...data.data };
-      }
-      return { id: data.id, ...data.data };
+      return data || null;
     } catch (error) {
       console.error(`[SUPABASE ERROR] getById failed for collection "${collectionName}" (ID: ${id}):`, error);
       throw error;
@@ -99,28 +90,18 @@ const SupabaseDB = {
    */
   async insert(collectionName, doc) {
     try {
-      let insertRow = {};
       const timestamp = new Date().toISOString();
+      
+      // Remove id from insertion row if present, let PostgreSQL generate the serial id
+      const { id, ...insertRow } = doc;
+      
+      // If collection expects timing, inject it
+      if (insertRow.createdAt === undefined) insertRow.createdAt = timestamp;
+      if (insertRow.updatedAt === undefined) insertRow.updatedAt = timestamp;
 
-      if (collectionName === 'users') {
-        const { email, ...rest } = doc;
-        insertRow = {
-          email: String(email).toLowerCase().trim(),
-          data: {
-            ...rest,
-            createdAt: doc.createdAt || timestamp,
-            updatedAt: doc.updatedAt || timestamp
-          }
-        };
-      } else {
-        const { id, ...rest } = doc; // Ignore user-supplied ID since PostgreSQL handles it
-        insertRow = {
-          data: {
-            ...rest,
-            createdAt: doc.createdAt || timestamp,
-            updatedAt: doc.updatedAt || timestamp
-          }
-        };
+      // Handle user email casing
+      if (collectionName === 'users' && insertRow.email) {
+        insertRow.email = String(insertRow.email).toLowerCase().trim();
       }
 
       const { data, error } = await supabase
@@ -133,10 +114,7 @@ const SupabaseDB = {
         throw error;
       }
 
-      if (collectionName === 'users') {
-        return { id: data.id, email: data.email, ...data.data };
-      }
-      return { id: data.id, ...data.data };
+      return data;
     } catch (error) {
       console.error(`[SUPABASE ERROR] insert failed for collection "${collectionName}":`, error);
       throw error;
@@ -148,27 +126,12 @@ const SupabaseDB = {
    */
   async update(collectionName, id, updates) {
     try {
-      const existing = await this.getById(collectionName, id);
-      if (!existing) {
-        throw new Error(`Document with ID ${id} not found in collection ${collectionName}`);
-      }
+      // Remove id from the updates body
+      const { id: _, ...updateRow } = updates;
+      updateRow.updatedAt = new Date().toISOString();
 
-      // Merge updates, removing the id from the stored data body
-      const merged = { ...existing, ...updates };
-      delete merged.id;
-      merged.updatedAt = new Date().toISOString();
-
-      let updateRow = {};
-      if (collectionName === 'users') {
-        const { email, ...rest } = merged;
-        updateRow = {
-          email: String(email || existing.email).toLowerCase().trim(),
-          data: rest
-        };
-      } else {
-        updateRow = {
-          data: merged
-        };
+      if (collectionName === 'users' && updateRow.email) {
+        updateRow.email = String(updateRow.email).toLowerCase().trim();
       }
 
       const { data, error } = await supabase
@@ -182,10 +145,7 @@ const SupabaseDB = {
         throw error;
       }
 
-      if (collectionName === 'users') {
-        return { id: data.id, email: data.email, ...data.data };
-      }
-      return { id: data.id, ...data.data };
+      return data;
     } catch (error) {
       console.error(`[SUPABASE ERROR] update failed for collection "${collectionName}" (ID: ${id}):`, error);
       throw error;
