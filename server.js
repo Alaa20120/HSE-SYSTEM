@@ -264,6 +264,51 @@ function collectFileMetadata(files = [], publicDir) {
 // AUTHENTICATION ROUTES
 // ==========================================
 
+app.get('/api/auth/seed', async (req, res) => {
+  try {
+    const users = await LocalDB.getAll('users');
+    if (users.length > 0) {
+      return res.json({ 
+        status: "already_seeded", 
+        count: users.length, 
+        users: users.map(u => ({ email: u.email, role: u.role })) 
+      });
+    }
+    
+    const defaultUsers = [
+      {
+        email: "ashrf@aban.com",
+        name: "Ashraf (Manager)",
+        role: "admin",
+        passwordHash: crypto.createHash('sha256').update("ashrf@aban").digest('hex')
+      },
+      {
+        email: "alaa@aban.com",
+        name: "Alaa (Manager)",
+        role: "admin",
+        passwordHash: crypto.createHash('sha256').update("alaa@aban").digest('hex')
+      },
+      {
+        email: "abdulah@aban.com",
+        name: "Abdullah",
+        role: "user",
+        passwordHash: crypto.createHash('sha256').update("abdulah@aban").digest('hex')
+      }
+    ];
+    
+    const seeded = [];
+    for (const u of defaultUsers) {
+      const newUser = await LocalDB.insert('users', u);
+      seeded.push(newUser.email);
+    }
+    
+    res.json({ status: "success", message: "Seeded default users successfully", seeded });
+  } catch (err) {
+    console.error("Manual seed failed:", err);
+    res.status(500).json({ status: "error", error: err.message, details: err });
+  }
+});
+
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password, loginType } = req.body;
