@@ -6,7 +6,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Derive default URL from project reference
-const DEFAULT_PROJECT_REF = 'hlswqnddptjnggtdicix';
+const DEFAULT_PROJECT_REF = 'udzvthlflcwnziplkqty';
 const DEFAULT_SUPABASE_URL = `https://${DEFAULT_PROJECT_REF}.supabase.co`;
 
 const supabaseUrl = process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
