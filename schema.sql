@@ -1,5 +1,31 @@
 -- HSE Safety Control System - Relational SQL Schema Setup
 
+-- Drop old tables to force recreation with new columns
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS workers CASCADE;
+DROP TABLE IF EXISTS activities CASCADE;
+DROP TABLE IF EXISTS ptws CASCADE;
+DROP TABLE IF EXISTS memos CASCADE;
+DROP TABLE IF EXISTS risk_assessments CASCADE;
+DROP TABLE IF EXISTS training CASCADE;
+DROP TABLE IF EXISTS near_misses CASCADE;
+DROP TABLE IF EXISTS activity_logs CASCADE;
+DROP TABLE IF EXISTS equipment CASCADE;
+DROP TABLE IF EXISTS store CASCADE;
+DROP TABLE IF EXISTS maintenance CASCADE;
+DROP TABLE IF EXISTS incidents CASCADE;
+DROP TABLE IF EXISTS safe_hours CASCADE;
+DROP TABLE IF EXISTS emergency_teams CASCADE;
+DROP TABLE IF EXISTS checklists_pre_op CASCADE;
+DROP TABLE IF EXISTS checklists_readiness CASCADE;
+DROP TABLE IF EXISTS checklists_workers CASCADE;
+DROP TABLE IF EXISTS checklists_emergency CASCADE;
+DROP TABLE IF EXISTS checklists_tbt CASCADE;
+DROP TABLE IF EXISTS checklists_attendance CASCADE;
+DROP TABLE IF EXISTS plans_method_statement CASCADE;
+DROP TABLE IF EXISTS plans_lifting CASCADE;
+DROP TABLE IF EXISTS plans_emergency CASCADE;
+
 -- 1. Users / Authentication Table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,

@@ -10,9 +10,33 @@ const LocalDB = require('./supabasedb');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// In-memory Session Manager & Active Session Tracker
-const sessions = {}; // token -> { email, name, role }
+// In-memory Active Session Tracker (best-effort, non-persistent)
 const activeUsers = {}; // email -> { email, name, role, ip, userAgent, lastActive }
+
+// HMAC-signed JWT helpers (no external library needed, works in serverless)
+const JWT_SECRET = process.env.JWT_SECRET || 'hse_vercel_secret_2025_aban';
+
+function createToken(payload) {
+  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const body = Buffer.from(JSON.stringify({ ...payload, iat: Date.now(), exp: Date.now() + 7 * 24 * 60 * 60 * 1000 })).toString('base64url');
+  const sig = crypto.createHmac('sha256', JWT_SECRET).update(`${header}.${body}`).digest('base64url');
+  return `${header}.${body}.${sig}`;
+}
+
+function verifyToken(token) {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const [header, body, sig] = parts;
+    const expectedSig = crypto.createHmac('sha256', JWT_SECRET).update(`${header}.${body}`).digest('base64url');
+    if (sig !== expectedSig) return null;
+    const payload = JSON.parse(Buffer.from(body, 'base64url').toString());
+    if (payload.exp < Date.now()) return null;
+    return payload;
+  } catch (_) {
+    return null;
+  }
+}
 
 // Seed default users if users collection is empty
 async function seedUsers() {
@@ -50,7 +74,7 @@ async function seedUsers() {
   }
 }
 
-// Auth Middleware
+// Auth Middleware - verifies HMAC-signed JWT token (stateless, works in serverless)
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -59,7 +83,7 @@ function authenticateToken(req, res, next) {
     return res.status(401).json({ error: "Access denied. Token missing." });
   }
   
-  const user = sessions[token];
+  const user = verifyToken(token);
   if (!user) {
     return res.status(403).json({ error: "Access denied. Invalid or expired session." });
   }
@@ -67,7 +91,7 @@ function authenticateToken(req, res, next) {
   // Attach user profile to request
   req.user = user;
   
-  // Mark user as active from their API request
+  // Best-effort: track active users in memory (resets on cold start, acceptable)
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
   const userAgent = req.headers['user-agent'] || 'Unknown Device';
   activeUsers[user.email] = {
@@ -335,13 +359,12 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(403).json({ error: "Access Denied: Standard accounts cannot log in to the Manager Command Center." });
     }
     
-    // Generate secure session token
-    const token = crypto.randomBytes(32).toString('hex');
-    sessions[token] = {
+    // Generate HMAC-signed JWT token (stateless, serverless-compatible)
+    const token = createToken({
       email: user.email,
       name: user.name,
       role: user.role
-    };
+    });
     
     // Track active state
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
@@ -376,14 +399,8 @@ app.post('/api/auth/login', async (req, res) => {
 
 app.post('/api/auth/logout', authenticateToken, async (req, res) => {
   try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    
-    if (token) {
-      delete sessions[token];
-    }
-    
-    // Also remove from active users in memory
+    // JWT is stateless - no server-side cleanup needed
+    // Just remove from active users tracker
     if (req.user && req.user.email) {
       delete activeUsers[req.user.email];
     }

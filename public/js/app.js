@@ -381,7 +381,13 @@ async function loadAllData() {
     updateFormSelectors();
   } catch (err) {
     console.error("Critical: Failed to load backend data", err);
-    alert("Could not connect to the local server. Make sure node server.js is running.");
+    console.error("Failed to load data from server:", err.message);
+    // Show a non-blocking toast instead of an alert
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#e53e3e;color:#fff;padding:12px 20px;border-radius:8px;z-index:9999;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+    toast.textContent = '⚠️ Failed to load data. Please refresh the page.';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
   }
 }
 
