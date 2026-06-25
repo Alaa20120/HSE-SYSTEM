@@ -149,9 +149,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Protect all /api endpoints except /api/auth/login
+// Protect all /api endpoints except /api/auth/login and /api/auth/seed
 app.use('/api', (req, res, next) => {
-  if (req.path === '/auth/login') {
+  if (req.path === '/auth/login' || req.path === '/auth/seed') {
     return next();
   }
   return authenticateToken(req, res, next);
