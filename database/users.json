@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "email": "ashrf@aban.com",
+    "name": "Ashraf (Manager)",
+    "role": "admin",
+    "passwordHash": "870bdf5e7b31dd6ee66e2799e0113616f13659def7038fad19cae03117d008f9",
+    "createdAt": "2026-06-25T05:59:14.057Z",
+    "updatedAt": "2026-06-25T05:59:14.058Z"
+  },
+  {
+    "id": 2,
+    "email": "alaa@aban.com",
+    "name": "Alaa (Manager)",
+    "role": "admin",
+    "passwordHash": "944cb46bb4eeb37b9db5188aa767ef7f8f40b61822c244c4662219acc8a702f2",
+    "createdAt": "2026-06-25T05:59:14.062Z",
+    "updatedAt": "2026-06-25T05:59:14.062Z"
+  },
+  {
+    "id": 3,
+    "email": "abdulah@aban.com",
+    "name": "Abdullah",
+    "role": "user",
+    "passwordHash": "b77aeac533ab6c79d4081e606245a4ed89220539c2bab3816bd734572ac7d399",
+    "createdAt": "2026-06-25T05:59:14.065Z",
+    "updatedAt": "2026-06-25T05:59:14.065Z"
+  }
+]

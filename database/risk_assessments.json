@@ -1,0 +1,94 @@
+[
+  {
+    "id": 1,
+    "activity": "العمل في الطرق العامة و السريعة",
+    "date": "2026-06-08",
+    "assessor": "علاء عبدالخالق",
+    "site": "الخبر",
+    "hazards": [
+      {
+        "id": 1,
+        "step": "تقييم محابس ",
+        "hazard": "خطر الدهس اصطدام سيارة",
+        "consequence": "حوادث تصادم",
+        "initialL": 3,
+        "initialS": 2,
+        "initialR": 6,
+        "controls": "وضع سيارة مقابل اماكن العمل لتقلل شدة التصادم و علامات تحذيرية و اشارات مرورية و شخص بعلم ",
+        "residualL": 2,
+        "residualS": 2,
+        "residualR": 4,
+        "actionParty": "flagman and warker"
+      }
+    ],
+    "createdAt": "2026-06-08T15:21:13.080Z",
+    "updatedAt": "2026-06-09T19:21:15.887Z"
+  },
+  {
+    "id": 2,
+    "activity": "Excavation and leaking",
+    "date": "2026-06-13",
+    "assessor": "Alaa Moustafa",
+    "site": "Yanbu",
+    "hazards": [
+      {
+        "id": 1,
+        "step": "Installation of flow meter on pip (Excavation)",
+        "hazard": "Falling sides of the excavation",
+        "consequence": "Die the workers under the radish",
+        "initialL": 3,
+        "initialS": 4,
+        "initialR": 12,
+        "controls": "Put Shoring or trench boxes ",
+        "residualL": 2,
+        "residualS": 4,
+        "residualR": 8,
+        "actionParty": "third party "
+      },
+      {
+        "id": 2,
+        "step": "Installation of flow meter on pip (Excavation)",
+        "hazard": "leaking and sink in the excavation",
+        "consequence": "sink ",
+        "initialL": 2,
+        "initialS": 3,
+        "initialR": 6,
+        "controls": "stand tripod",
+        "residualL": 2,
+        "residualS": 2,
+        "residualR": 4,
+        "actionParty": "workers"
+      },
+      {
+        "id": 3,
+        "step": "Installation of flow meter on pip (Excavation)",
+        "hazard": "toxic gases and suffocation ",
+        "consequence": "cases of fainting or poisoning",
+        "initialL": 3,
+        "initialS": 2,
+        "initialR": 6,
+        "controls": "ventilation and measure gases ",
+        "residualL": 3,
+        "residualS": 1,
+        "residualR": 3,
+        "actionParty": "workers and safety officer"
+      },
+      {
+        "id": 4,
+        "step": "Installation of flow meter on pip (Excavation)",
+        "hazard": "falling instruments ",
+        "consequence": "lose the instrument or hit the workers",
+        "initialL": 3,
+        "initialS": 2,
+        "initialR": 6,
+        "controls": "safety distance and use barriers ",
+        "residualL": 2,
+        "residualS": 2,
+        "residualR": 4,
+        "actionParty": "workers"
+      }
+    ],
+    "createdAt": "2026-06-08T18:23:14.208Z",
+    "updatedAt": "2026-06-10T18:59:09.416Z"
+  }
+]

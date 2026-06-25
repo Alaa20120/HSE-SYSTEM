@@ -1,0 +1,32 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Local databases and active logs
+database/activity_logs.json
+database/sessions.json
+
+# Uploads directory contents (keep the directory but ignore uploaded files)
+public/uploads/*
+uploads/*
+!public/uploads/.gitkeep
+!uploads/.gitkeep
+
+# Operating system logs and cache
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+
+# Development tools configurations
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

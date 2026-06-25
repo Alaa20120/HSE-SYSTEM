@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "activityDescription": "Underground cabling in trenches",
+    "date": "2026-06-24",
+    "preparedBy": "Aban Safety Dept",
+    "executionSteps": "1. Lay warning tape\n2. Excavate 1.2m\n3. Pull cables",
+    "equipmentUsed": "Excavator 20T",
+    "safetyMeasures": "Shoring, gas check, full PPE",
+    "createdAt": "2026-06-24T12:55:04.975Z",
+    "updatedAt": "2026-06-24T12:55:04.975Z"
+  }
+]

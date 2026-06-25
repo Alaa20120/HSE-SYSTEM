@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HSE Control System - Local Safety Hub</title>
+  <meta name="description" content="Local Health, Safety, and Environment (HSE) management control panel. Track permits, activities, risk assessments, trainings, and near misses offline.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Icon Libraries -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <!-- Chart.js library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Container for the full screen login overlay -->
+  <div id="login-container"></div>
+
+  <div class="app-container">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="sidebar no-print">
+      <div class="logo-section">
+        <img src="images/logo.jpg" alt="Aban Contracting" class="logo-img">
+      </div>
+      
+      <ul class="nav-menu">
+        <li class="nav-item active" onclick="navigate('dashboard')">
+          <i class="fas fa-chart-pie"></i>
+          <span>Dashboard</span>
+        </li>
+
+        <!-- 1- السجلات (Registers) -->
+        <li class="nav-group-header" onclick="toggleNavGroup(this)">
+          <div class="group-title">
+            <i class="fas fa-folder-open"></i>
+            <span>1- السجلات (Registers)</span>
+          </div>
+          <i class="fas fa-chevron-down toggle-icon"></i>
+        </li>
+        <ul class="nav-sub-menu">
+          <li class="nav-item" onclick="navigate('equipment')">
+            <i class="fas fa-truck-monster"></i>
+            <span>Critical Equipment</span>
+          </li>
+          <li class="nav-item" onclick="navigate('store')">
+            <i class="fas fa-warehouse"></i>
+            <span>Store & Warehouse</span>
+          </li>
+          <li class="nav-item" onclick="navigate('maintenance')">
+            <i class="fas fa-toolbox"></i>
+            <span>Maintenance Log</span>
+          </li>
+          <li class="nav-item" onclick="navigate('incidents')">
+            <i class="fas fa-briefcase-medical"></i>
+            <span>Incidents & Injuries</span>
+          </li>
+          <li class="nav-item" onclick="navigate('safe-hours')">
+            <i class="fas fa-clock"></i>
+            <span>Safe Working Hours</span>
+          </li>
+          <li class="nav-item" onclick="navigate('workers')">
+            <i class="fas fa-users"></i>
+            <span>Workers Registry</span>
+          </li>
+          <li class="nav-item" onclick="navigate('training')">
+            <i class="fas fa-user-graduate"></i>
+            <span>Training Registry</span>
+          </li>
+          <li class="nav-item" onclick="navigate('emergency-teams')">
+            <i class="fas fa-people-group"></i>
+            <span>Emergency Teams</span>
+          </li>
+        </ul>
+
+        <!-- 2- القوائم (Checklists) -->
+        <li class="nav-group-header" onclick="toggleNavGroup(this)">
+          <div class="group-title">
+            <i class="fas fa-clipboard-list"></i>
+            <span>2- القوائم (Checklists)</span>
+          </div>
+          <i class="fas fa-chevron-down toggle-icon"></i>
+        </li>
+        <ul class="nav-sub-menu">
+          <li class="nav-item" onclick="navigate('pre-operation')">
+            <i class="fas fa-clipboard-check"></i>
+            <span>Pre-operation Form</span>
+          </li>
+          <li class="nav-item" onclick="navigate('equipment-readiness')">
+            <i class="fas fa-check-double"></i>
+            <span>Equipment Readiness</span>
+          </li>
+          <li class="nav-item" onclick="navigate('task-workers')">
+            <i class="fas fa-user-check"></i>
+            <span>Task Workers List</span>
+          </li>
+          <li class="nav-item" onclick="navigate('emergency-checklists')">
+            <i class="fas fa-kit-medical"></i>
+            <span>Emergency Team List</span>
+          </li>
+          <li class="nav-item" onclick="navigate('tbt-register')">
+            <i class="fas fa-comments"></i>
+            <span>Tool Box Talk (TBT)</span>
+          </li>
+          <li class="nav-item" onclick="navigate('attendance-exit')">
+            <i class="fas fa-user-clock"></i>
+            <span>Attendance & Exit</span>
+          </li>
+        </ul>
+
+        <!-- 3- الخطط (Plans) -->
+        <li class="nav-group-header" onclick="toggleNavGroup(this)">
+          <div class="group-title">
+            <i class="fas fa-map"></i>
+            <span>3- الخطط (Plans)</span>
+          </div>
+          <i class="fas fa-chevron-down toggle-icon"></i>
+        </li>
+        <ul class="nav-sub-menu">
+          <li class="nav-item" onclick="navigate('method-statements')">
+            <i class="fas fa-file-invoice"></i>
+            <span>Method Statement</span>
+          </li>
+          <li class="nav-item" onclick="navigate('risk-assessments')">
+            <i class="fas fa-shield-halved"></i>
+            <span>Risk Assessment</span>
+          </li>
+          <li class="nav-item" onclick="navigate('lifting-plans')">
+            <i class="fas fa-weight-hanging"></i>
+            <span>Lifting Plan</span>
+          </li>
+          <li class="nav-item" onclick="navigate('emergency-plans')">
+            <i class="fas fa-truck-field"></i>
+            <span>Emergency Plan</span>
+          </li>
+        </ul>
+
+        <!-- 4- تصاريح العمل (Permits) -->
+        <li class="nav-item" onclick="navigate('ptw')">
+          <i class="fas fa-file-contract"></i>
+          <span>Permits to Work (رفع تصاريح)</span>
+        </li>
+
+        <!-- 5- المذكرات والطلبات (Memos) -->
+        <li class="nav-item" onclick="navigate('memos')">
+          <i class="fas fa-envelope-open-text"></i>
+          <span>5- المذكرات والطلبات (Memos)</span>
+        </li>
+
+        <li class="nav-item" onclick="navigate('matrix-ref')">
+          <i class="fas fa-border-all"></i>
+          <span>مصفوفة المخاطر والألوان</span>
+        </li>
+        <li class="nav-item" onclick="navigate('near-misses')">
+          <i class="fas fa-circle-exclamation"></i>
+          <span>Near Misses</span>
+        </li>
+        <li class="nav-item" onclick="navigate('reports')">
+          <i class="fas fa-print"></i>
+          <span>Safety Reports</span>
+        </li>
+      </ul>
+      
+      <div class="sidebar-footer">
+        <div id="sidebar-user-info" style="margin-bottom:10px; font-size:0.8rem; display:none;">
+          <span style="color:var(--text-primary); font-weight:600;" id="sidebar-username">User</span>
+        </div>
+        <p><i class="fas fa-shield-halved"></i> Connected to Server</p>
+        <button class="btn btn-secondary logout-nav-btn" onclick="handleLogout()" style="width:100%; display:none; margin-top:10px;" id="sidebar-logout-btn">
+          <i class="fas fa-right-from-bracket"></i> Log Out / خروج
+        </button>
+        <button class="theme-toggle-btn no-print" onclick="toggleTheme()" style="width:100%; margin-top:8px; display:none;" id="sidebar-theme-btn">
+          <i class="fas fa-moon"></i> <span id="theme-btn-text">Light Mode</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Sticky Header -->
+      <header class="top-header no-print">
+        <button class="hamburger-menu-btn no-print" id="sidebar-toggle" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="page-title">
+          <h1 id="header-title">HSE Dashboard</h1>
+          <p id="header-subtitle">Safety metrics and daily controls overview</p>
+        </div>
+        <div class="header-meta">
+          <button class="lang-toggle-btn no-print" onclick="toggleLanguage()">
+            <i class="fas fa-globe"></i> <span id="lang-btn-text">عربي</span>
+          </button>
+          <!-- Switch back to Manager Portal button for admins in Work platform -->
+          <button class="theme-toggle-btn no-print" id="header-admin-btn" onclick="switchToManagerPlatform()" style="display: none; background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); color: var(--warning); padding: 8px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; align-items: center; gap: 6px;">
+            <i class="fas fa-crown"></i> <span id="header-admin-btn-text">Manager Portal / لوحة المدير</span>
+          </button>
+          <div class="user-profile-header" id="user-header-profile" style="display: none;">
+            <div class="user-avatar-circle" id="user-avatar">U</div>
+            <span id="user-display-name">User Name</span>
+          </div>
+          <img src="images/logo.jpg" alt="Aban Logo" style="height: 38px; border-radius: 4px; margin-right: 15px;">
+          <div class="system-status">
+            <span class="status-dot"></span>
+            <span>Server Connected</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- SPA VIEWS CONTAINERS -->
+      <section id="dashboard-section" class="content-section active"></section>
+      
+      <!-- Owner Admin Control Panel -->
+      <section id="admin-section" class="content-section"></section>
+
+      <!-- Owner Manager Dashboard Panel -->
+      <section id="manager-dashboard-section" class="content-section"></section>
+
+      <!-- Safety Memos register -->
+      <section id="memos-section" class="content-section"></section>
+      
+      <!-- 1. Registers -->
+      <section id="equipment-section" class="content-section"></section>
+      <section id="store-section" class="content-section"></section>
+      <section id="maintenance-section" class="content-section"></section>
+      <section id="incidents-section" class="content-section"></section>
+      <section id="safe-hours-section" class="content-section"></section>
+      <section id="workers-section" class="content-section"></section>
+      <section id="training-section" class="content-section"></section>
+      <section id="emergency-teams-section" class="content-section"></section>
+
+      <!-- 2. Checklists -->
+      <section id="pre-operation-section" class="content-section"></section>
+      <section id="equipment-readiness-section" class="content-section"></section>
+      <section id="task-workers-section" class="content-section"></section>
+      <section id="emergency-checklists-section" class="content-section"></section>
+      <section id="tbt-register-section" class="content-section"></section>
+      <section id="attendance-exit-section" class="content-section"></section>
+
+      <!-- 3. Plans -->
+      <section id="method-statements-section" class="content-section"></section>
+      <section id="risk-assessments-section" class="content-section"></section>
+      <section id="lifting-plans-section" class="content-section"></section>
+      <section id="emergency-plans-section" class="content-section"></section>
+
+      <!-- 4. Permits -->
+      <section id="ptw-section" class="content-section"></section>
+      
+      <!-- Others -->
+      <section id="matrix-ref-section" class="content-section"></section>
+      <section id="near-misses-section" class="content-section"></section>
+      <section id="reports-section" class="content-section"></section>
+      
+    </main>
+
+  </div>
+
+  <!-- ==========================================
+       MODALS: FORMS AND DIALOGS (no-print)
+       ========================================== -->
+
+  <!-- MODAL 1: WORKER REGISTRATION -->
+  <div id="workerModal" class="modal no-print">
+    <div class="modal-content glass-card">
+      <div class="modal-header">
+        <h3>Register Worker Details</h3>
+        <span class="close-btn" onclick="closeModal('workerModal')">&times;</span>
+      </div>
+      <form onsubmit="submitWorkerForm(event)">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="w_name">Worker Full Name *</label>
+            <input type="text" id="w_name" required placeholder="e.g. John Doe">
+          </div>
+          <div class="form-group">
+            <label for="w_code">Worker ID / Badge Code *</label>
+            <input type="text" id="w_code" required placeholder="e.g. W-7492">
+          </div>
+          <div class="form-group">
+            <label for="w_jobTitle">Job Role / Title</label>
+            <input type="text" id="w_jobTitle" placeholder="e.g. Electrician, Carpenter">
+          </div>
+          <div class="form-group">
+            <label for="w_site">Assigned Site / Project</label>
+            <input type="text" id="w_site" placeholder="e.g. Sector-4 Substation">
+          </div>
+          <div class="form-group">
+            <label for="w_status">Fit-to-Work Status</label>
+            <select id="w_status">
+              <option value="Active">Active / Fit</option>
+              <option value="Inactive">Inactive / Suspended</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex; justify-content: flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('workerModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Worker</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: LOG DAILY ACTIVITY -->
+  <div id="activityModal" class="modal no-print">
+    <div class="modal-content glass-card">
+      <div class="modal-header">
+        <h3>Log Daily Activity</h3>
+        <span class="close-btn" onclick="closeModal('activityModal')">&times;</span>
+      </div>
+      <form onsubmit="submitActivityForm(event)">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="act_date">Activity Date *</label>
+            <input type="date" id="act_date" required>
+          </div>
+          <div class="form-group">
+            <label for="act_site">Site / Project Location *</label>
+            <input type="text" id="act_site" required placeholder="e.g. Zone B Scaffold">
+          </div>
+          <div class="form-group full-width">
+            <label for="act_activityName">Activity Scope & Description *</label>
+            <input type="text" id="act_activityName" required placeholder="e.g. Cable laying inside high voltage panels">
+          </div>
+          <div class="form-group">
+            <label for="act_supervisor">Responsible Supervisor *</label>
+            <input type="text" id="act_supervisor" required placeholder="Supervisor name">
+          </div>
+          <div class="form-group">
+            <label for="act_status">Job Status</label>
+            <select id="act_status">
+              <option value="Planned">Planned</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label for="act_ptwId">Link to Active Permit to Work (PTW)</label>
+            <select id="act_ptwId">
+              <option value="">No Associated Permit</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="act_hazardsIdentified">Special Hazards Identified</label>
+            <input type="text" id="act_hazardsIdentified" placeholder="e.g. Electrocution risks, dust inhalation">
+          </div>
+          <div class="form-group">
+            <label for="act_actionsTaken">Controls / Mitigation Taken</label>
+            <input type="text" id="act_actionsTaken" placeholder="e.g. LOTO applied, dust masks distributed">
+          </div>
+          <div class="form-group full-width">
+            <label>Assigned Workers involved</label>
+            <div class="checkbox-selector" id="act_workers_list">
+              <!-- JS Injected Worker Checkboxes -->
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; justify-content: flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('activityModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Activity</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: UPLOAD PERMIT TO WORK -->
+  <div id="ptwModal" class="modal no-print">
+    <div class="modal-content glass-card">
+      <div class="modal-header">
+        <h3>Upload Permit to Work (PTW)</h3>
+        <span class="close-btn" onclick="closeModal('ptwModal')">&times;</span>
+      </div>
+      <form onsubmit="submitPtwForm(event)" enctype="multipart/form-data">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="ptw_permitNo">Permit Number / Code *</label>
+            <input type="text" id="ptw_permitNo" required placeholder="e.g. PTW-HOT-9014">
+          </div>
+          <div class="form-group">
+            <label for="ptw_type">Permit Type *</label>
+            <select id="ptw_type" required>
+              <option value="Hot Work">Hot Work (Welding, Grinding)</option>
+              <option value="Cold Work">Cold Work (General Operations)</option>
+              <option value="Working at Height">Working at Height (>2m)</option>
+              <option value="Confined Space">Confined Space Entry</option>
+              <option value="Electrical Isolation">Electrical Isolation LOTO</option>
+              <option value="Excavation">Excavation & Trenching</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ptw_issueDate">Date Issued *</label>
+            <input type="date" id="ptw_issueDate" required>
+          </div>
+          <div class="form-group">
+            <label for="ptw_expiryDate">Date Expired *</label>
+            <input type="date" id="ptw_expiryDate" required>
+          </div>
+          <div class="form-group">
+            <label for="ptw_site">Site / Project Location *</label>
+            <input type="text" id="ptw_site" required placeholder="e.g. Tank Farm Site A">
+          </div>
+          <div class="form-group">
+            <label for="ptw_status">Permit Status</label>
+            <select id="ptw_status">
+              <option value="Active">Active / مفتوح</option>
+              <option value="Closed">Closed / مغلق</option>
+              <option value="Expired">Expired / منتهي</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label for="ptw_description">Scope / Activity Covered</label>
+            <textarea id="ptw_description" placeholder="Specify permit scope, requirements, and isolations..."></textarea>
+          </div>
+          
+          <!-- Main Document drag/upload area -->
+          <div class="form-group full-width">
+            <label>Permit Document Upload (PDF or Image) *</label>
+            <div class="upload-container" onclick="document.getElementById('ptwFile').click()">
+              <input type="file" id="ptwFile" name="ptwFile" class="file-input" accept="application/pdf,image/*" onchange="handlePtwFileSelected(this)">
+              <div id="ptwFileLabel">
+                <i class="fas fa-cloud-arrow-up upload-icon"></i>
+                <div class="upload-text">Drag & drop permit file or <span>browse</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- JSA/Work site photos upload area -->
+          <div class="form-group full-width">
+            <label>Work Site / JSA Photos (Max 10 Images)</label>
+            <div class="upload-container" onclick="document.getElementById('ptwPhotos').click()">
+              <input type="file" id="ptwPhotos" name="ptwPhotos" class="file-input" accept="image/*" multiple onchange="handlePtwPhotosSelected(this)">
+              <div id="ptwPhotosLabel">
+                <i class="fas fa-camera upload-icon"></i>
+                <div class="upload-text">Click or drag photos of isolation, work site, or JSA sheets (multiple allowed)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional Safety Reports upload area -->
+          <div class="form-group full-width">
+            <label>Additional Reports / Gas Check Certificates (Max 10 Files)</label>
+            <div class="upload-container" onclick="document.getElementById('ptwReports').click()">
+              <input type="file" id="ptwReports" name="ptwReports" class="file-input" accept=".pdf,.doc,.docx,.txt" multiple onchange="handlePtwReportsSelected(this)">
+              <div id="ptwReportsLabel">
+                <i class="fas fa-file-shield upload-icon"></i>
+                <div class="upload-text">Attach audit sheets, checklist reports, or gas tests (multiple allowed)</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div style="display:flex; justify-content: flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('ptwModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Upload & Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- DYNAMIC GENERIC FORM MODAL FOR REGISTERS, CHECKLISTS, AND PLANS -->
+  <div id="genericFormModal" class="modal no-print">
+    <div class="modal-content glass-card">
+      <div class="modal-header">
+        <h3 id="genericModalTitle">HSE Record Form</h3>
+        <span class="close-btn" onclick="closeModal('genericFormModal')">&times;</span>
+      </div>
+      <form id="genericForm" onsubmit="submitGenericForm(event)">
+        <div id="genericFormBody">
+          <!-- Dynamically Injected by JS components framework -->
+        </div>
+        <div style="display:flex; justify-content: flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('genericFormModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="genericFormSubmitBtn">Save Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 4: LOG TRAINING SESSION -->
+  <div id="trainingModal" class="modal no-print">
+    <div class="modal-content glass-card">
+      <div class="modal-header">
+        <h3>Record HSE Training Session</h3>
+        <span class="close-btn" onclick="closeModal('trainingModal')">&times;</span>
+      </div>
+      <form onsubmit="submitTrainingForm(event)">
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="tr_title">Training Subject / Topic *</label>
+            <input type="text" id="tr_title" required placeholder="e.g. Scaffold safety, Chemical hazards, Fire warden training">
+          </div>
+          <div class="form-group">
+            <label for="tr_date">Session Date *</label>
+            <input type="date" id="tr_date" required>
+          </div>
+          <div class="form-group">
+            <label for="tr_trainer">Trainer Name / Credentials *</label>
+            <input type="text" id="tr_trainer" required placeholder="e.g. Lead HSE Supervisor">
+          </div>
+          <div class="form-group">
+            <label for="tr_site">Training Site / Location</label>
+            <input type="text" id="tr_site" placeholder="e.g. Main induction room">
+          </div>
+          <div class="form-group">
+            <label for="tr_duration">Duration</label>
+            <input type="text" id="tr_duration" placeholder="e.g. 1 hour, 30 minutes">
+          </div>
+          <div class="form-group full-width">
+            <label for="tr_remarks">Training Remarks / Feedback</label>
+            <textarea id="tr_remarks" placeholder="Notes on competency check, toolbox talks, or feedback..."></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label>Select Attendees *</label>
+            <div class="checkbox-selector" id="tr_workers_list">
+              <!-- JS Injected Worker checkboxes -->
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; justify-content: flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('trainingModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Log Training</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 5: LOG NEAR MISS INCIDENT -->
+  <div id="nearMissModal" class="modal no-print">
+    <div class="modal-content glass-card">
+      <div class="modal-header">
+        <h3>Report Near Miss Incident</h3>
+        <span class="close-btn" onclick="closeModal('nearMissModal')">&times;</span>
+      </div>
+      <form onsubmit="submitNearMissForm(event)">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="nm_date">Incident Date *</label>
+            <input type="date" id="nm_date" required>
+          </div>
+          <div class="form-group">
+            <label for="nm_time">Time of Incident</label>
+            <input type="time" id="nm_time" value="08:00">
+          </div>
+          <div class="form-group">
+            <label for="nm_site">Incident Site / Location *</label>
+            <input type="text" id="nm_site" required placeholder="e.g. Sector-3 scaffolding staircase">
+          </div>
+          <div class="form-group">
+            <label for="nm_potentialSeverity">Potential Severity Matrix</label>
+            <select id="nm_potentialSeverity">
+              <option value="Low">Low (No injury potential)</option>
+              <option value="Medium">Medium (Minor injury potential)</option>
+              <option value="High">High (Serious hazard, potential fatality)</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label for="nm_description">Description of Event *</label>
+            <textarea id="nm_description" required placeholder="Provide clear description of what happened, how, and why it is a near miss..."></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label for="nm_correctiveAction">Immediate / Proposed Corrective Action</label>
+            <textarea id="nm_correctiveAction" placeholder="e.g. Scaffolding stair secured, barrier taped off area immediately..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="nm_reporter">Reporter Name (Optional)</label>
+            <input type="text" id="nm_reporter" placeholder="Anonymous or staff name">
+          </div>
+          <div class="form-group">
+            <label for="nm_status">Log Status</label>
+            <select id="nm_status">
+              <option value="Open">Open (Action Pending)</option>
+              <option value="Investigating">Under Investigation</option>
+              <option value="Closed">Closed (Resolved)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex; justify-content: flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('nearMissModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Submit Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 6: CREATE MEMO / RECORD SAFETY NOTICE -->
+  <div id="memoModal" class="modal no-print">
+    <div class="modal-content glass-card">
+      <div class="modal-header">
+        <h3>Create Safety Memo / إصدار مذكرة سلامة</h3>
+        <span class="close-btn" onclick="closeModal('memoModal')">&times;</span>
+      </div>
+      <form onsubmit="submitMemoForm(event)">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="memo_type">Memo Type / نوع المذكرة *</label>
+            <select id="memo_type" required>
+              <option value="Safety Violation / مخالفة سلامة">Safety Violation / مخالفة سلامة</option>
+              <option value="Worksite Notice / تنبيه موقع عمل">Worksite Notice / تنبيه موقع عمل</option>
+              <option value="Safety Commendation / شهادة شكر تقديرية">Safety Commendation / شهادة شكر تقديرية</option>
+              <option value="General Request / طلب عام">General Request / طلب عام</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="memo_date">Date / التاريخ *</label>
+            <input type="date" id="memo_date" required>
+          </div>
+          <div class="form-group">
+            <label for="memo_target_type">Target Type / توجيه المذكرة *</label>
+            <select id="memo_target_type" required onchange="toggleMemoTargetPlaceholder()">
+              <option value="Person">Person / شخص (موظف/عامل)</option>
+              <option value="Worksite">Worksite / موقع عمل</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="memo_target_name" id="memo_target_label">Person Name / الاسم *</label>
+            <input type="text" id="memo_target_name" required placeholder="e.g. John Doe">
+          </div>
+          <div class="form-group full-width">
+            <label for="memo_subject">Subject / الموضوع *</label>
+            <input type="text" id="memo_subject" required placeholder="e.g. Scaffold structural instability notice">
+          </div>
+          <div class="form-group full-width">
+            <label for="memo_description">Description & Details / تفاصيل المخالفة أو الطلب *</label>
+            <textarea id="memo_description" required style="height: 120px;" placeholder="Describe details..."></textarea>
+          </div>
+        </div>
+        <div style="display:flex; justify-content: flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('memoModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save & View Memo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Print area for memos (hidden on screen, visible during print) -->
+  <div id="memo-print-area" class="memo-print-area no-print"></div>
+
+  <!-- Core Javascript files -->
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
