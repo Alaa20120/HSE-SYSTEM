@@ -161,21 +161,28 @@ app.use('/api', (req, res, next) => {
 app.use('/api', logUserActivity);
 
 // Setup Directories for main permit documents, photos, and reports
-const UPLOADS_DIR = path.join(__dirname, 'uploads', 'ptw');
-const MAIN_DIR = path.join(__dirname, 'uploads', 'ptw', 'main');
-const PHOTOS_DIR = path.join(__dirname, 'uploads', 'ptw', 'photos');
-const REPORTS_DIR = path.join(__dirname, 'uploads', 'ptw', 'reports');
+const isVercel = process.env.VERCEL;
+const baseUploadsDir = isVercel ? '/tmp' : __dirname;
+
+const UPLOADS_DIR = path.join(baseUploadsDir, 'uploads', 'ptw');
+const MAIN_DIR = path.join(baseUploadsDir, 'uploads', 'ptw', 'main');
+const PHOTOS_DIR = path.join(baseUploadsDir, 'uploads', 'ptw', 'photos');
+const REPORTS_DIR = path.join(baseUploadsDir, 'uploads', 'ptw', 'reports');
 
 [MAIN_DIR, PHOTOS_DIR, REPORTS_DIR].forEach(dir => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  } catch (err) {
+    console.error(`[UPLOADS] Warning: Failed to create uploads directory ${dir}:`, err.message);
   }
 });
 
 // Serve public static folder
 app.use(express.static(path.join(__dirname, 'public')));
 // Serve uploads folder so browser can view/download uploaded files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(baseUploadsDir, 'uploads')));
 
 // Configure Advanced Multer for handling multiple upload fields (permit document, photos, reports)
 const advancedStorage = multer.diskStorage({
